@@ -25,14 +25,14 @@ let downloadStatus = { status: 'idle', progress: 0 };
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
-// Helper: Ensure directory exists
+// Pembantu: Pastiin foldernya ada
 function ensureDirExists(dir) {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
 }
 
-// Download and Extract scrcpy
+// Unduh dan ekstrak scrcpy secara otomatis
 function downloadScrcpy() {
   return new Promise((resolve, reject) => {
     if (fs.existsSync(SCRCPY_EXE)) {
@@ -47,7 +47,7 @@ function downloadScrcpy() {
 
     const file = fs.createWriteStream(ZIP_PATH);
     
-    // Perform HTTPS request with redirect handling
+    // Jalankan request HTTPS dan handle redirect otomatis
     function get(url) {
       https.get(url, (response) => {
         if (response.statusCode === 301 || response.statusCode === 302) {
@@ -83,10 +83,10 @@ function downloadScrcpy() {
             downloadStatus = { status: 'extracting', progress: 100 };
             io.emit('download-status', downloadStatus);
 
-            // Use Windows PowerShell to unzip natively
+            // Pake PowerShell bawaan Windows buat ekstrak zip secara native
             const psCommand = `powershell.exe -Command "Expand-Archive -Path '${ZIP_PATH}' -DestinationPath '${BIN_DIR}' -Force"`;
             exec(psCommand, (err) => {
-              // Delete zip file in both success and failure cases to clean up
+              // Hapus file zip setelah selesai biar rapi
               try { fs.unlinkSync(ZIP_PATH); } catch (e) {}
 
               if (err) {
@@ -116,13 +116,13 @@ function downloadScrcpy() {
   });
 }
 
-// Route: Get device list
+// Rute API: Ambil daftar perangkat yang terhubung
 app.get('/api/devices', (req, res) => {
   if (!fs.existsSync(ADB_EXE)) {
     return res.json({ success: false, error: 'ADB not found. Please wait for initialization.' });
   }
 
-  // Run adb devices safely using execFile
+  // Jalankan adb devices dengan execFile biar aman
   execFile(ADB_EXE, ['devices'], (err, stdout, stderr) => {
     if (err) {
       return res.json({ success: false, error: err.message });
@@ -130,7 +130,7 @@ app.get('/api/devices', (req, res) => {
 
     const lines = stdout.trim().split('\n');
     const devices = [];
-    // Skip the first line ("List of devices attached")
+    // Lewati baris pertama ("List of devices attached")
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i].trim();
       if (line) {
@@ -143,7 +143,7 @@ app.get('/api/devices', (req, res) => {
   });
 });
 
-// Route: Get scrcpy status
+// Rute API: Ambil status mirroring saat ini
 app.get('/api/status', (req, res) => {
   res.json({
     download: downloadStatus,
@@ -151,7 +151,7 @@ app.get('/api/status', (req, res) => {
   });
 });
 
-// Start Mirroring Websocket / API
+// Mulai proses mirroring
 app.post('/api/start-mirror', (req, res) => {
   if (!fs.existsSync(SCRCPY_EXE)) {
     return res.json({ success: false, error: 'scrcpy executable not found.' });
@@ -177,30 +177,29 @@ app.post('/api/start-mirror', (req, res) => {
 
   const args = [];
 
-  // Device targeting
+  // Targetin ID perangkat tertentu
   if (deviceId) {
     args.push('-s', deviceId);
   }
 
-  // Resolution limit
+  // Batasin resolusi layar
   if (resolution && resolution !== 'original') {
     args.push('--max-size', resolution);
   }
 
-  // FPS limit
+  // Batasin fps
   if (fps && fps !== 'unlimited') {
     args.push('--max-fps', fps);
   }
 
-  // Bitrate limit
+  // Batasin bitrate video
   if (bitrate) {
     args.push('--video-bit-rate', bitrate + 'M');
   }
 
-  // Audio settings
+  // Setelan suara
   if (audioOption === 'mute-phone') {
-    // Redirection and play on PC is the default on Android 11+.
-    // We can also pass playback source
+    // Secara bawaan suara masuk ke PC untuk Android 11+
     args.push('--audio-source=playback');
   } else if (audioOption === 'dup') {
     args.push('--audio-source=playback', '--audio-dup');
@@ -208,7 +207,7 @@ app.post('/api/start-mirror', (req, res) => {
     args.push('--no-audio');
   }
 
-  // Toggles
+  // Setelan toggle tambahan
   if (alwaysOnTop) {
     args.push('--always-on-top');
   }
@@ -234,7 +233,7 @@ app.post('/api/start-mirror', (req, res) => {
 
   console.log(`Starting scrcpy with args: ${args.join(' ')}`);
 
-  // Spawn scrcpy process
+  // Jalankan proses scrcpy
   scrcpyProcess = spawn(SCRCPY_EXE, args, { cwd: SCRCPY_DIR });
 
   io.emit('status-change', { mirroring: true });
@@ -265,7 +264,7 @@ app.post('/api/start-mirror', (req, res) => {
   res.json({ success: true });
 });
 
-// Route: Stop Mirroring
+// Rute API: Hentikan proses mirroring
 app.post('/api/stop-mirror', (req, res) => {
   if (!scrcpyProcess) {
     return res.json({ success: false, error: 'Mirroring is not running.' });
@@ -275,13 +274,13 @@ app.post('/api/stop-mirror', (req, res) => {
   res.json({ success: true });
 });
 
-// Socket connection
+// Hubungkan koneksi real-time Socket.io
 io.on('connection', (socket) => {
   socket.emit('download-status', downloadStatus);
   socket.emit('status-change', { mirroring: scrcpyProcess !== null });
 });
 
-// Start Server with dynamic fallback
+// Jalankan server lokal dengan port fallback otomatis
 function startServer(port) {
   const listenError = (err) => {
     if (err.code === 'EADDRINUSE') {
@@ -301,14 +300,14 @@ function startServer(port) {
     console.log(` MeRoarringHD Server running at http://localhost:${port}`);
     console.log(`=======================================================`);
     
-    // Try to open browser
+    // Coba buka halaman dashboard di browser otomatis
     try {
       await open(`http://localhost:${port}`);
     } catch (e) {
       console.log(`Browser failed to open automatically. Open http://localhost:${port} manually.`);
     }
 
-    // Start downloader check
+    // Cek dan download scrcpy kalau belum ada
     try {
       await downloadScrcpy();
     } catch (err) {

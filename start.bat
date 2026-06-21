@@ -5,7 +5,7 @@ echo              MEROARRINGHD CONTROLLER SETUP
 echo =======================================================
 echo.
 
-:: Check for Node.js
+:: Cek apakah Node.js sudah terinstall di sistem
 where node >nul 2>nul
 if %errorlevel% neq 0 (
     echo [ERROR] Node.js is not installed on this system!
@@ -19,7 +19,7 @@ echo [INFO] Node.js detected:
 node -v
 echo.
 
-:: Check if node_modules exists
+:: Cek apakah folder node_modules sudah ada, kalau belum install dependencies
 if not exist node_modules (
     echo [INFO] Installing required dependencies...
     call npm install

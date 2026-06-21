@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const socket = io();
 
-  // DOM Elements
+  // Elemen-elemen DOM yang dipake
   const scrcpyStatus = document.getElementById('scrcpy-status');
   const deviceSelect = document.getElementById('device-select');
   const refreshDevicesBtn = document.getElementById('refresh-devices-btn');
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabButtons = document.querySelectorAll('.tab-btn');
   const tabContents = document.querySelectorAll('.tab-content');
 
-  // Config Inputs
+  // Input konfigurasi parameter
   const resolutionSelect = document.getElementById('resolution-select');
   const fpsSelect = document.getElementById('fps-select');
   const bitrateSelect = document.getElementById('bitrate-select');
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let isScrcpyReady = false;
 
-  // Helper to sync custom select disabled class
+  // Pembantu buat sinkronisasi kelas disabled pada select kustom
   function updateCustomDropdownsDisableState() {
     const selects = document.querySelectorAll('select.form-control');
     selects.forEach(select => {
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Custom Dropdown Builder (slides open with a smooth unrolling animation)
+  // Pembuat dropdown kustom (membuka ke bawah dengan animasi gulungan yang mulus)
   function initCustomDropdowns() {
     const selects = document.querySelectorAll('select.form-control');
     
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const wrapper = select.parentElement;
       if (!wrapper) return;
       
-      // Prevent double initialization
+      // Cegah inisialisasi ganda biar gak double render
       if (wrapper.querySelector('.custom-select')) return;
       
       const customSelect = document.createElement('div');
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
         
-        // Match currently selected option
+        // Samakan opsi yang terpilih saat ini
         let selectedOption = Array.from(options).find(opt => opt.value === select.value) || options[0];
         triggerText.textContent = selectedOption.textContent;
         
@@ -120,19 +120,20 @@ document.addEventListener('DOMContentLoaded', () => {
       
       renderOptions();
       
-      // Toggle dropdown open/close on click
+      // Buka/tutup dropdown pas diklik
       trigger.addEventListener('click', (e) => {
         e.stopPropagation();
         if (customSelect.classList.contains('disabled')) return;
         
         document.querySelectorAll('.custom-select').forEach(cs => {
+          // Tutup dropdown kustom lain yang masih kebuka
           if (cs !== customSelect) cs.classList.remove('open');
         });
         
         customSelect.classList.toggle('open');
       });
       
-      // Accessibility support
+      // Dukungan aksesibilitas keyboard (Enter / Space / Escape)
       trigger.addEventListener('keydown', (e) => {
         if (customSelect.classList.contains('disabled')) return;
         if (e.key === 'Enter' || e.key === ' ') {
@@ -143,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
       
-      // Observe select element option changes
+      // Pantau perubahan opsi di elemen select asli lewat MutationObserver
       const observer = new MutationObserver((mutations) => {
         mutations.forEach(mutation => {
           if (mutation.type === 'childList') {
@@ -161,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
     
-    // Close dropdowns when clicking outside
+    // Tutup semua dropdown pas klik di luar area select
     document.addEventListener('click', () => {
       document.querySelectorAll('.custom-select').forEach(cs => cs.classList.remove('open'));
     });
@@ -169,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let isMirroring = false;
   let devicePollInterval = null;
 
-  // Log Message Helper
+  // Pembantu cetak logs terminal ke layar box log
   function appendLog(message, type = 'stdout') {
     const logLine = document.createElement('div');
     logLine.className = `log-line ${type}`;
@@ -178,13 +179,13 @@ document.addEventListener('DOMContentLoaded', () => {
     consoleLogs.scrollTop = consoleLogs.scrollHeight;
   }
 
-  // Clear Console
+  // Bersihkan layar console logs
   clearConsoleBtn.addEventListener('click', () => {
     consoleLogs.innerHTML = '';
     appendLog('Console cleared.', 'system');
   });
 
-  // Update Tab Underline Indicator Position & Width
+  // Perbarui posisi & lebar garis indikator tab bawah
   function updateTabIndicator() {
     const activeTab = document.querySelector('.tab-btn.active');
     const indicator = document.querySelector('.tab-indicator');
@@ -200,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Tab Navigation
+  // Navigasi tab dokumentasi petunjuk setup
   tabButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const tabId = btn.getAttribute('data-tab');
@@ -211,15 +212,15 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.classList.add('active');
       document.getElementById(`tab-${tabId}`).classList.add('active');
       
-      // Animate sliding tab indicator line
+      // Geser garis indikator tab bawah biar responsif
       updateTabIndicator();
     });
   });
 
-  // Handle window resizing to keep the sliding indicator aligned
+  // Jaga posisi garis indikator tetep pas waktu ukuran browser berubah
   window.addEventListener('resize', updateTabIndicator);
 
-  // Fetch Connected Devices
+  // Ambil daftar HP yang terhubung via ADB dari API server
   async function fetchDevices() {
     if (!isScrcpyReady) {
       deviceSelect.innerHTML = '<option value="">Waiting for mirroring engine...</option>';
@@ -260,14 +261,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Start Device Polling
+  // Mulai cari HP terhubung tiap beberapa detik (polling)
   function startDevicePolling() {
     if (devicePollInterval) clearInterval(devicePollInterval);
     fetchDevices();
     devicePollInterval = setInterval(fetchDevices, 4000);
   }
 
-  // Stop Device Polling
+  // Hentikan pencarian HP otomatis
   function stopDevicePolling() {
     if (devicePollInterval) {
       clearInterval(devicePollInterval);
@@ -275,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Socket IO Receivers
+  // Penerima event data dari Socket.io backend
   socket.on('download-status', (data) => {
     const dot = scrcpyStatus.querySelector('.status-dot');
     const text = scrcpyStatus.querySelector('.status-text');
@@ -353,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     
-    // Sync the custom dropdown state
+    // Sinkronin status aktif/tidak pada dropdown kustom
     updateCustomDropdownsDisableState();
   });
 
@@ -361,13 +362,13 @@ document.addEventListener('DOMContentLoaded', () => {
     appendLog(data.message, data.type);
   });
 
-  // Action: Scan Devices Manually
+  // Tombol: Cari HP secara manual
   refreshDevicesBtn.addEventListener('click', () => {
     appendLog('Scanning for connected ADB devices...', 'system');
     fetchDevices();
   });
 
-  // Action: Start Mirroring
+  // Tombol: Mulai Mirroring HP
   startBtn.addEventListener('click', async () => {
     const deviceId = deviceSelect.value;
     if (!deviceId && deviceSelect.options[0]?.text === 'No devices detected') {
@@ -407,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Action: Stop Mirroring
+  // Tombol: Hentikan Mirroring HP
   stopBtn.addEventListener('click', async () => {
     appendLog('Requesting streaming shutdown...', 'info');
     try {
@@ -421,7 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Bootstrapping Initial Status Check
+  // Cek status koneksi pertama kali pas web dibuka
   async function checkInitialStatus() {
     try {
       const response = await fetch('/api/status');
@@ -441,18 +442,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Protocol Check: Alert user if opening file directly
+  // Peringatan kalau web dibuka langsung sebagai file lokal (double click HTML)
   if (window.location.protocol === 'file:') {
     const banner = document.getElementById('protocol-warning');
     if (banner) banner.classList.remove('hidden');
     appendLog('WARNING: You opened the HTML file directly. Clickable items will not work.', 'stderr');
   }
 
-  // Initialize custom dropdowns
+  // Inisialisasi dropdown kustom pertama kali
   initCustomDropdowns();
   updateCustomDropdownsDisableState();
 
-  // Initialize sliding tab indicator position
+  // Inisialisasi posisi awal garis indikator tab bawah
   updateTabIndicator();
 
   checkInitialStatus();

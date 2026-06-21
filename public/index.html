@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MeRoarringHD — Real-time HD Screen & Audio Mirroring</title>
-  <!-- Google Fonts -->
+  <!-- Font dari Google Fonts (Font Kustom untuk UI Premium) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <!-- Stylesheet -->
+  <!-- CSS Utama Aplikasi -->
   <link rel="stylesheet" href="style.css">
-  <!-- Socket.io -->
+  <!-- Pustaka Socket.io buat komunikasi real-time ke server -->
   <script src="/socket.io/socket.io.js"></script>
-  <!-- Transparent Minimalist Favicon -->
+  <!-- Favicon Minimalis Transparan -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f1dac4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cdefs%3E%3Cmask id='logo-mask'%3E%3Crect width='24' height='24' fill='white'/%3E%3Crect x='12' y='7' width='10' height='15' rx='2' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='2' y='3' width='13' height='9' rx='1.5' stroke-width='2' mask='url(%23logo-mask)'/%3E%3Cpath d='M5 12v1a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-1' stroke-width='2' mask='url(%23logo-mask)'/%3E%3Crect x='13' y='8' width='8' height='13' rx='1.5' stroke-width='2' fill='none'/%3E%3Cline x1='15.5' y1='18' x2='18.5' y2='18' stroke-width='2'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -23,7 +23,7 @@
   </div>
 
   <div class="container">
-    <!-- Header -->
+    <!-- Bagian Header Utama Dashboard -->
     <header class="header card">
       <div class="logo-area">
         <div class="logo-icon">
@@ -34,10 +34,10 @@
                 <rect x="12" y="7" width="10" height="15" rx="2" fill="black" />
               </mask>
             </defs>
-            <!-- PC Monitor (Masked) -->
+            <!-- Monitor PC (Dengan Masking) -->
             <rect x="2" y="3" width="13" height="9" rx="1.5" stroke-width="2" mask="url(#logo-icon-mask)"></rect>
             <path d="M5 12v1a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-1" stroke-width="2" mask="url(#logo-icon-mask)"></path>
-            <!-- Phone (Unmasked, transparent fill, only stroke) -->
+            <!-- Layar HP (Tanpa Masking, cuma garis tepi) -->
             <rect x="13" y="8" width="8" height="13" rx="1.5" stroke-width="2" fill="none"></rect>
             <line x1="15.5" y1="18" x2="18.5" y2="18" stroke-width="2"></line>
           </svg>
@@ -61,10 +61,10 @@
       </div>
     </header>
 
-    <!-- Main Grid -->
+    <!-- Grid Utama Dashboard -->
     <main class="dashboard-grid">
       
-      <!-- Left Panel: Configurations -->
+      <!-- Panel Kiri: Konfigurasi Parameter -->
       <section class="config-panel card">
         <div class="section-title">
           <span class="step-num">1</span>
@@ -82,7 +82,7 @@
         </div>
 
         <div class="settings-grid">
-          <!-- Resolution -->
+          <!-- Resolusi Layar -->
           <div class="form-group">
             <label for="resolution-select">Resolution (HD Limit)</label>
             <div class="select-wrapper">
@@ -95,7 +95,7 @@
             </div>
           </div>
 
-          <!-- Max FPS -->
+          <!-- Batasan Framerate (FPS) -->
           <div class="form-group">
             <label for="fps-select">Framerate Limit</label>
             <div class="select-wrapper">
@@ -107,7 +107,7 @@
             </div>
           </div>
 
-          <!-- Bitrate -->
+          <!-- Bitrate Video -->
           <div class="form-group">
             <label for="bitrate-select">Video Bitrate</label>
             <div class="select-wrapper">
@@ -120,7 +120,7 @@
             </div>
           </div>
 
-          <!-- Audio Options -->
+          <!-- Setelan Suara / Audio -->
           <div class="form-group">
             <label for="audio-select">Audio Redirection</label>
             <div class="select-wrapper">
@@ -176,7 +176,7 @@
         </div>
       </section>
 
-      <!-- Right Panel: Launcher & Logs -->
+      <!-- Panel Kanan: Pusat Kontrol & Log Konsol -->
       <section class="launcher-panel card">
         <div class="section-title">
           <span class="step-num">2</span>
@@ -209,7 +209,7 @@
 
     </main>
 
-    <!-- Guide / Documentation Area -->
+    <!-- Area Panduan & Dokumentasi Setup -->
     <section class="guide-panel card">
       <div class="tabs-header">
         <button class="tab-btn active" data-tab="android-usb">Android USB Setup</button>
@@ -375,7 +375,7 @@
     </footer>
   </div>
 
-  <!-- Application Logic -->
+  <!-- Logika Utama Aplikasi (Client-Side JS) -->
   <script src="app.js"></script>
 </body>
 </html>
