@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo.svg" width="128" alt="MeRoarringHD Logo" />
+  <img src="logo.svg?v=2" width="128" alt="MeRoarringHD Logo" />
 </p>
 
 <h1 align="center">MeRoarringHD</h1>
