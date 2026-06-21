@@ -1,0 +1,15 @@
+{
+  "name": "mirror-hd",
+  "version": "1.0.0",
+  "description": "Premium HD Screen & Audio Mirroring Controller",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5",
+    "open": "^8.4.2"
+  },
+  "private": true
+}

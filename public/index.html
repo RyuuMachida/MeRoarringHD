@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeRoarringHD — Real-time HD Screen & Audio Mirroring</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Socket.io -->
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- Transparent Minimalist Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f1dac4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cdefs%3E%3Cmask id='logo-mask'%3E%3Crect width='24' height='24' fill='white'/%3E%3Crect x='12' y='7' width='10' height='15' rx='2' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='2' y='3' width='13' height='9' rx='1.5' stroke-width='2' mask='url(%23logo-mask)'/%3E%3Cpath d='M5 12v1a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-1' stroke-width='2' mask='url(%23logo-mask)'/%3E%3Crect x='13' y='8' width='8' height='13' rx='1.5' stroke-width='2' fill='none'/%3E%3Cline x1='15.5' y1='18' x2='18.5' y2='18' stroke-width='2'/%3E%3C/svg%3E">
+</head>
+<body>
+
+
+  <div id="protocol-warning" class="warning-banner hidden">
+    <strong>⚠️ PANDUAN PENTING:</strong> Jendela browser ini terbuka langsung sebagai file lokal. Pemindaian HP dan tombol <strong>tidak akan berfungsi</strong>. Harap jalankan <strong>start.bat</strong> di folder MeRoarringHD, lalu buka <strong>http://localhost:5050</strong> di browser Anda!
+  </div>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="header card">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <defs>
+              <mask id="logo-icon-mask">
+                <rect width="24" height="24" fill="white" />
+                <rect x="12" y="7" width="10" height="15" rx="2" fill="black" />
+              </mask>
+            </defs>
+            <!-- PC Monitor (Masked) -->
+            <rect x="2" y="3" width="13" height="9" rx="1.5" stroke-width="2" mask="url(#logo-icon-mask)"></rect>
+            <path d="M5 12v1a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-1" stroke-width="2" mask="url(#logo-icon-mask)"></path>
+            <!-- Phone (Unmasked, transparent fill, only stroke) -->
+            <rect x="13" y="8" width="8" height="13" rx="1.5" stroke-width="2" fill="none"></rect>
+            <line x1="15.5" y1="18" x2="18.5" y2="18" stroke-width="2"></line>
+          </svg>
+        </div>
+        <div>
+          <h1>MeRoarringHD</h1>
+          <p class="subtitle">Real-time screen & audio controller</p>
+        </div>
+      </div>
+      
+      <div class="status-indicator-bar">
+        <div class="status-item" id="scrcpy-status">
+          <span class="status-dot warning"></span>
+          <span class="status-text">Initializing dependencies...</span>
+        </div>
+        <div class="status-divider"></div>
+        <button id="refresh-devices-btn" class="btn btn-secondary" title="Refresh connected devices">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          Scan Devices
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="dashboard-grid">
+      
+      <!-- Left Panel: Configurations -->
+      <section class="config-panel card">
+        <div class="section-title">
+          <span class="step-num">1</span>
+          <h2>Configure Parameters</h2>
+        </div>
+
+        <div class="form-group">
+          <label for="device-select">Select Active Device</label>
+          <div class="select-wrapper">
+            <select id="device-select" class="form-control">
+              <option value="">Scanning for devices...</option>
+            </select>
+          </div>
+          <p class="help-text" id="device-status-desc">Connect your Android device via USB with USB Debugging enabled.</p>
+        </div>
+
+        <div class="settings-grid">
+          <!-- Resolution -->
+          <div class="form-group">
+            <label for="resolution-select">Resolution (HD Limit)</label>
+            <div class="select-wrapper">
+              <select id="resolution-select" class="form-control">
+                <option value="original">Original (Full Quality)</option>
+                <option value="1920" selected>1080p (FHD - Recommended)</option>
+                <option value="1280">720p (HD - Best Latency)</option>
+                <option value="1024">576p (SD - Ultra Fast)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Max FPS -->
+          <div class="form-group">
+            <label for="fps-select">Framerate Limit</label>
+            <div class="select-wrapper">
+              <select id="fps-select" class="form-control">
+                <option value="unlimited" selected>Smooth (60 FPS+ / No Limit)</option>
+                <option value="60">Lock 60 FPS</option>
+                <option value="30">Lock 30 FPS (Low CPU)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Bitrate -->
+          <div class="form-group">
+            <label for="bitrate-select">Video Bitrate</label>
+            <div class="select-wrapper">
+              <select id="bitrate-select" class="form-control">
+                <option value="16">16 Mbps (Ultra High Quality)</option>
+                <option value="8" selected>8 Mbps (Standard HD)</option>
+                <option value="4">4 Mbps (Smooth & Stable)</option>
+                <option value="2">2 Mbps (Low Latency / Wi-Fi)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Audio Options -->
+          <div class="form-group">
+            <label for="audio-select">Audio Redirection</label>
+            <div class="select-wrapper">
+              <select id="audio-select" class="form-control">
+                <option value="mute-phone" selected>Play on PC, Mute Phone (Android 11+)</option>
+                <option value="dup">Play on Both PC & Phone (Android 13+)</option>
+                <option value="disable">Disable Audio Forwarding</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="toggles-section">
+          <h3>Display & System Options</h3>
+          
+          <div class="toggles-grid">
+            <label class="toggle-control">
+              <input type="checkbox" id="toggle-always-on-top">
+              <span class="toggle-slider"></span>
+              <span class="toggle-label">Always on Top</span>
+            </label>
+
+            <label class="toggle-control">
+              <input type="checkbox" id="toggle-borderless">
+              <span class="toggle-slider"></span>
+              <span class="toggle-label">Borderless Window (No Title Bar)</span>
+            </label>
+
+            <label class="toggle-control">
+              <input type="checkbox" id="toggle-fullscreen">
+              <span class="toggle-slider"></span>
+              <span class="toggle-label">Fullscreen Mode</span>
+            </label>
+
+            <label class="toggle-control">
+              <input type="checkbox" id="toggle-turn-screen-off" checked>
+              <span class="toggle-slider"></span>
+              <span class="toggle-label">Turn Off Phone Screen (Saves Battery)</span>
+            </label>
+
+            <label class="toggle-control">
+              <input type="checkbox" id="toggle-stay-awake" checked>
+              <span class="toggle-slider"></span>
+              <span class="toggle-label">Stay Awake (Prevent Sleep)</span>
+            </label>
+
+            <label class="toggle-control">
+              <input type="checkbox" id="toggle-record">
+              <span class="toggle-slider"></span>
+              <span class="toggle-label">Record Session (Save .mp4)</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Panel: Launcher & Logs -->
+      <section class="launcher-panel card">
+        <div class="section-title">
+          <span class="step-num">2</span>
+          <h2>Control Center</h2>
+        </div>
+
+        <div class="action-zone">
+          <button id="start-btn" class="btn btn-primary btn-large glowing-btn" disabled>
+            <span class="btn-glow-container"></span>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            START SCREEN MIRROR
+          </button>
+          
+          <button id="stop-btn" class="btn btn-danger btn-large hidden">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect></svg>
+            STOP STREAMING
+          </button>
+        </div>
+
+        <div class="console-box">
+          <div class="console-header">
+            <span>Terminal Output</span>
+            <button id="clear-console-btn" class="btn btn-text">Clear</button>
+          </div>
+          <div id="console-logs" class="console-content">
+            <div class="log-line system">Waiting for backend initialization...</div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Guide / Documentation Area -->
+    <section class="guide-panel card">
+      <div class="tabs-header">
+        <button class="tab-btn active" data-tab="android-usb">Android USB Setup</button>
+        <button class="tab-btn" data-tab="android-wifi">Android Wi-Fi (Wireless)</button>
+        <button class="tab-btn" data-tab="ios-airplay">iOS AirPlay (iPhone)</button>
+        <div class="tab-indicator"></div>
+      </div>
+
+      <div class="tab-content active" id="tab-android-usb">
+        <h3>How to Setup Android via USB</h3>
+        <ol class="setup-steps">
+          <li>
+            <div class="step-badge">1</div>
+            <div class="step-body">
+              <strong>Enable Developer Options:</strong>
+              <p>On your phone, go to <strong>Settings > About Phone</strong>. Tap <strong>Build Number</strong> 7 times until you see a message saying "You are now a developer!".</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-badge">2</div>
+            <div class="step-body">
+              <strong>Enable USB Debugging:</strong>
+              <p>Go to <strong>Settings > System > Developer Options</strong>. Scroll down and enable <strong>USB Debugging</strong>.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-badge">3</div>
+            <div class="step-body">
+              <strong>Connect phone to Laptop:</strong>
+              <p>Connect your phone via a USB cable. When a prompt appears on your phone screen asking to "Allow USB Debugging?", check <strong>"Always allow from this computer"</strong> and tap <strong>Allow</strong>.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-badge">4</div>
+            <div class="step-body">
+              <strong>Click "Scan Devices" & Start:</strong>
+              <p>Click the <strong>Scan Devices</strong> button in the header. Select your phone from the dropdown list, then click <strong>Start Screen Mirror</strong>.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <div class="tab-content" id="tab-android-wifi">
+        <h3>Wireless Screen Mirroring (Android Wi-Fi)</h3>
+        <p class="intro-p">Make sure both your laptop and phone are connected to the exact same Wi-Fi network.</p>
+        <ol class="setup-steps">
+          <li>
+            <div class="step-badge">1</div>
+            <div class="step-body">
+              <strong>Initial USB Setup:</strong>
+              <p>Perform the USB setup once by connecting your phone via cable and authorizing USB Debugging.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-badge">2</div>
+            <div class="step-body">
+              <strong>Find your Phone's IP Address:</strong>
+              <p>On your phone, go to <strong>Settings > About Phone > Status</strong> (or Wi-Fi settings) to find your local IP Address (e.g., <code>192.168.1.50</code>).</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-badge">3</div>
+            <div class="step-body">
+              <strong>Enable TCP Port over ADB:</strong>
+              <p>Open the console logs here or a Windows terminal, run ADB in TCP mode: <code>adb tcpip 5555</code>. (You can run this by entering it in the command executor or starting mirroring once over USB which initializes ADB).</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-badge">4</div>
+            <div class="step-body">
+              <strong>Connect Wirelessly:</strong>
+              <p>Disconnect your USB cable. Open a terminal and run: <code>adb connect &lt;YOUR_PHONE_IP&gt;:5555</code>. Once connected, your phone IP will show up in the "Select Active Device" dropdown wirelessly!</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <div class="tab-content" id="tab-ios-airplay">
+        <h3>How to Mirror iPhone (iOS) Screen to Windows</h3>
+        <p class="intro-p">Since iOS screen mirroring is locked to Apple's proprietary AirPlay protocol, it cannot be run directly via USB debugging like Android. However, you can make your PC act as an AirPlay Receiver!</p>
+        <ol class="setup-steps">
+          <li>
+            <div class="step-badge">1</div>
+            <div class="step-body">
+              <strong>Connect to the same Wi-Fi:</strong>
+              <p>Ensure your iPhone and Windows laptop are connected to the same local Wi-Fi network.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-badge">2</div>
+            <div class="step-body">
+              <strong>Use UxPlay (Open Source AirPlay Server) or 5KPlayer:</strong>
+              <p>Download and install <strong>UxPlay</strong> (open-source AirPlay server port for Windows) or a free receiver like <strong>5KPlayer</strong> or <strong>LonelyScreen</strong>.</p>
+              <p class="info-note">Note: For UxPlay, you need to install Apple's <strong>Bonjour Print Services for Windows</strong> (which enables local network device discovery).</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-badge">3</div>
+            <div class="step-body">
+              <strong>Activate Screen Mirroring on iPhone:</strong>
+              <p>Swipe down from the top-right corner of your iPhone to open the Control Center. Tap the <strong>Screen Mirroring</strong> icon (two overlapping rectangles) and select your laptop from the list. Your screen and audio will stream immediately to your PC!</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <footer class="footer-professional">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <defs>
+                <mask id="footer-logo-mask">
+                  <rect width="24" height="24" fill="white" />
+                  <rect x="12" y="7" width="10" height="15" rx="2" fill="black" />
+                </mask>
+              </defs>
+              <rect x="2" y="3" width="13" height="9" rx="1.5" stroke-width="2" mask="url(#footer-logo-mask)"></rect>
+              <path d="M5 12v1a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-1" stroke-width="2" mask="url(#footer-logo-mask)"></path>
+              <rect x="13" y="8" width="8" height="13" rx="1.5" stroke-width="2" fill="none"></rect>
+              <line x1="15.5" y1="18" x2="18.5" y2="18" stroke-width="2"></line>
+            </svg>
+            <span class="brand-name">MeRoarringHD</span>
+          </div>
+          <p class="brand-desc">Real-time screen & audio controller powered by Genymobile scrcpy engine. Optimized for speed and premium latency.</p>
+        </div>
+        
+        <div class="footer-links-col">
+          <h4>Documentation</h4>
+          <ul>
+            <li><a href="#" onclick="document.querySelector('.tab-btn[data-tab=\'android-usb\']').click(); return false;">USB Setup</a></li>
+            <li><a href="#" onclick="document.querySelector('.tab-btn[data-tab=\'android-wifi\']').click(); return false;">Wi-Fi Wireless</a></li>
+            <li><a href="#" onclick="document.querySelector('.tab-btn[data-tab=\'ios-airplay\']').click(); return false;">iOS AirPlay</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-socials">
+          <h4>Creator Profiles</h4>
+          <div class="social-icons">
+            <a href="https://github.com/RyuuMachida" target="_blank" rel="noopener noreferrer" class="social-link" title="GitHub RyuuMachida">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+              </svg>
+            </a>
+            <a href="https://www.tiktok.com/@rilss_ear1" target="_blank" rel="noopener noreferrer" class="social-link" title="TikTok @rilss_ear1">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p class="copyright-text">
+          © 2026 MeRoarringHD. All Rights Reserved. Licensed under <a href="/LICENSE" target="_blank">MIT License</a>. Created by RyuuMachida.
+        </p>
+        <p class="patent-notice-text">
+          <strong>LISENSI & HAK PATEN:</strong> Dilarang keras mengganti nama (rebrand), mendistribusikan ulang, atau mengatasnamakan proyek ini sebagai milik pihak lain tanpa izin tertulis. Hak cipta & paten sepenuhnya terdaftar atas nama <strong>RyuuMachida</strong>.
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
