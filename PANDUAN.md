@@ -7,14 +7,14 @@ MeRoarringHD adalah aplikasi screen mirroring real-time beresolusi tinggi (HD) y
 
 ---
 
-## 📋 Persyaratan Sistem
+## Persyaratan Sistem
 1. **Node.js**: Pastikan laptop Anda sudah terinstal Node.js. Jika belum, download di [nodejs.org](https://nodejs.org/).
 2. **Android 11 atau lebih baru**: Fitur pengiriman suara (audio forwarding) secara bawaan membutuhkan Android 11+.
 3. **Kabel Data USB**: Gunakan kabel data berkualitas yang mendukung transfer data (bukan sekadar kabel charger saja).
 
 ---
 
-## 🚀 Cara Menjalankan Aplikasi
+## Cara Menjalankan Aplikasi
 
 1. **Jalankan Aplikasi via `start.bat`:**
    - Buka folder `MeRoarringHD`.
@@ -41,7 +41,7 @@ MeRoarringHD adalah aplikasi screen mirroring real-time beresolusi tinggi (HD) y
 
 ---
 
-## 🛠️ Panduan Pemecahan Masalah (Troubleshooting)
+## Panduan Pemecahan Masalah (Troubleshooting)
 
 ### 1. Kenapa HP saya tidak muncul di pilihan setelah klik "Scan Devices"?
 * **Kabel USB tidak mendukung transfer data**: Coba gunakan kabel USB lain atau colokkan ke port USB lain di laptop.

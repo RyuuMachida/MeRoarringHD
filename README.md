@@ -2,7 +2,7 @@
   <img src="logo.svg?v=2" width="120" alt="MeRoarringHD Logo" />
 </p>
 
-<h1 align="center">MeRoarringHD 🦁</h1>
+<h1 align="center">MeRoarringHD</h1>
 
 <p align="center">
   <b>Mirroring layar & audio HP ke PC instan, lancar jaya, tanpa ribet setup!</b>
@@ -17,7 +17,7 @@
 
 ---
 
-## 🤔 Kenapa MeRoarringHD?
+## Kenapa MeRoarringHD?
 
 Capek nyari aplikasi screen mirroring yang gratis tapi banyak iklan, lambat, atau ribet konfigurasinya? 
 
@@ -25,18 +25,18 @@ Capek nyari aplikasi screen mirroring yang gratis tapi banyak iklan, lambat, ata
 
 ---
 
-## ✨ Fitur Keren
+## Fitur Keren
 
-- **⚡ Latensi Super Rendah & HD:** Kualitas streaming mantap (1080p FHD / 60 FPS+) tanpa delay yang mengganggu. Cocok buat gaming atau presentasi.
-- **🔊 Audio Forwarding otomatis:** Suara dari game/aplikasi HP langsung keluar di laptop, dan speaker HP otomatis mati (khusus Android 11+).
-- **🔋 Hemat Baterai (Screen Off):** Bisa mirroring sambil mematikan layar HP fisik kamu agar HP tidak panas dan hemat baterai.
-- **📦 Auto-Install Engine:** Nggak perlu pusing download ADB atau Scrcpy manual. Saat pertama kali dijalankan, sistem bakal ngunduh semua binary resminya secara otomatis.
-- **🖥️ Jendela Borderless:** Tampilan screen mirror bersih tanpa frame/title bar Windows yang mengganggu di layar Anda.
-- **🎛️ Custom UI Modern:** Dropdown interaktif dengan animasi gulungan serta tab penunjuk yang bergeser mulus.
+- **Latensi Super Rendah & HD:** Kualitas streaming mantap (1080p FHD / 60 FPS+) tanpa delay yang mengganggu. Cocok buat gaming atau presentasi.
+- **Audio Forwarding otomatis:** Suara dari game/aplikasi HP langsung keluar di laptop, dan speaker HP otomatis mati (khusus Android 11+).
+- **Hemat Baterai (Screen Off):** Bisa mirroring sambil mematikan layar HP fisik kamu agar HP tidak panas dan hemat baterai.
+- **Auto-Install Engine:** Nggak perlu pusing download ADB atau Scrcpy manual. Saat pertama kali dijalankan, sistem bakal ngunduh semua binary resminya secara otomatis.
+- **Jendela Borderless:** Tampilan screen mirror bersih tanpa frame/title bar Windows yang mengganggu di layar Anda.
+- **Custom UI Modern:** Dropdown interaktif dengan animasi gulungan serta tab penunjuk yang bergeser mulus.
 
 ---
 
-## 💻 Teknologi yang Digunakan
+## Teknologi yang Digunakan
 
 Aplikasi ini dirancang ringan tanpa framework berlebih:
 - **Backend:** Node.js, Express (API & static file server), Socket.io (streaming console logs real-time).
@@ -45,7 +45,7 @@ Aplikasi ini dirancang ringan tanpa framework berlebih:
 
 ---
 
-## 📋 Sebelum Memulai
+## Sebelum Memulai
 
 Pastikan laptop/PC kamu memenuhi syarat berikut:
 1. Sudah terpasang **Node.js** (unduh di [nodejs.org](https://nodejs.org/)).
@@ -54,7 +54,7 @@ Pastikan laptop/PC kamu memenuhi syarat berikut:
 
 ---
 
-## 🚀 Cara Pakai (Gampang Banget!)
+## Cara Pakai (Gampang Banget!)
 
 1. **Download & Ekstrak:** Unduh repositori ini dan pastikan semua berkas ada di dalam folder `MeRoarringHD`.
 2. **Jalankan:** Klik dua kali file **`start.bat`**.
@@ -70,7 +70,7 @@ Pastikan laptop/PC kamu memenuhi syarat berikut:
 
 ---
 
-## 👥 Pembuat
+## Pembuat
 
 Proyek ini dibuat dan dikembangkan sepenuhnya oleh **RyuuMachida**.
 
@@ -79,7 +79,7 @@ Proyek ini dibuat dan dikembangkan sepenuhnya oleh **RyuuMachida**.
 
 ---
 
-## 📄 Lisensi
+## Lisensi
 
 Proyek ini menggunakan lisensi **MIT License** - bebas digunakan dan dimodifikasi untuk kebutuhan personal maupun komersial. Selengkapnya bisa dicek di berkas [LICENSE](LICENSE).
 
